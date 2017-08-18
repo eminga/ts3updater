@@ -1,7 +1,7 @@
 #!/bin/sh
 # Script Name: ts3updater.sh
 # Author: eminga
-# Version: 0.2
+# Version: 0.2.1
 # Description: Installs and updates TeamSpeak 3 servers
 # License: MIT License
 
