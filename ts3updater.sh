@@ -63,7 +63,7 @@ if [ "$old_version" != "$version" ]; then
 		sha256=$(sha256 -q "$tmpfile")
 	fi
 
-	if [ "$checksum" == "$sha256" ]; then
+	if [ "$checksum" = "$sha256" ]; then
 		if [ -e "ts3server_startscript.sh" ]; then
         		./ts3server_startscript.sh stop
 		else
