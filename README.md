@@ -5,7 +5,7 @@ A lightweight script to install or update a TeamSpeak 3 server on Linux or FreeB
 * curl
 * jq (https://stedolan.github.io/jq/download/)
 
-All other dependencies (cd, cut, echo, grep, mktemp, sed, shasum/sha256/sha256sum, tar, uname, wc, and an sh-compatible shell) are installed by default on most systems.
+All other dependencies (awk, cd, cut, echo, grep, mktemp, sed, shasum/sha256/sha256sum, tar, uname, wc, and an sh-compatible shell) are installed by default on most systems.
 
 ## How to use
 ### Install a new TeamSpeak 3 server
