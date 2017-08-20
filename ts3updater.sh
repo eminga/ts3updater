@@ -1,7 +1,7 @@
 #!/bin/sh
 # Script Name: ts3updater.sh
 # Author: eminga
-# Version: 0.2.1
+# Version: 0.3
 # Description: Installs and updates TeamSpeak 3 servers
 # License: MIT License
 
@@ -16,9 +16,12 @@ else
 	if [ "$os" = 'Linux' ]; then
 		jqfilter='.linux'
 		tsdir='teamspeak3-server_linux'
-	else
+	elif [ "$os" = 'FreeBSD' ]; then
 		jqfilter='.freebsd'
 		tsdir='teamspeak3-server_freebsd'
+	else
+		echo 'Could not detect operating system. If you run Linux, FreeBSD, or macOS and get this error, please open an issue on Github.'
+		exit 1
 	fi
 
 	architecture=$(uname -m)
@@ -55,12 +58,16 @@ if [ "$old_version" != "$version" ]; then
 	tmpfile=$(mktemp)
 	curl -Lo "$tmpfile" "$link"
 
-	if [ "$os" = 'Linux' ]; then
+	if command -v sha256sum > /dev/null 2>&1; then
 		sha256=$(sha256sum "$tmpfile" | cut -b 1-64)
-	elif [ "$os" = 'Darwin' ]; then
+	elif command -v shasum > /dev/null 2>&1; then
 		sha256=$(shasum -a 256 "$tmpfile" | cut -b 1-64)
-	else
+	elif command -v sha256 > /dev/null 2>&1; then
 		sha256=$(sha256 -q "$tmpfile")
+	else
+		echo 'Could not generate SHA256 hash. Please make sure at least one of these commands is available: sha256sum, shasum, sha256' 1>&2
+		rm "$tmpfile"
+		exit 1
 	fi
 
 	if [ "$checksum" = "$sha256" ]; then
@@ -73,10 +80,12 @@ if [ "$old_version" != "$version" ]; then
 		tar --strip-components 1 -xf "$tmpfile" "$tsdir"
 		./ts3server_startscript.sh start
 	else
-		echo 'ERROR: Checksums do not match! Aborting...' 1>&2
+		echo 'Checksum of downloaded file is incorrect!' 1>&2
+		rm "$tmpfile"
+		exit 1
 	fi
 
 	rm "$tmpfile"
 else
-	echo "The server is already up-to-date."
+	echo "The installed server is up-to-date. Version: $version"
 fi
