@@ -57,11 +57,11 @@ if [ "$old_version" != "$version" ]; then
 	tmpfile=$(mktemp)
 	curl -Lo "$tmpfile" "$link"
 
-	if command -v sha256sum > /dev/null; then
+	if command -v sha256sum > /dev/null 2>&1; then
 		sha256=$(sha256sum "$tmpfile" | cut -b 1-64)
-	elif command -v shasum > /dev/null; then
+	elif command -v shasum > /dev/null 2>&1; then
 		sha256=$(shasum -a 256 "$tmpfile" | cut -b 1-64)
-	elif command -v sha256 > /dev/null; then
+	elif command -v sha256 > /dev/null 2>&1; then
 		sha256=$(sha256 -q "$tmpfile")
 	else
 		echo 'Could not generate SHA256 hash. Please make sure at least one of these commands is available: sha256sum, shasum, sha256' 1>&2
