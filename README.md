@@ -16,6 +16,10 @@ Place the script in the directory of your existing TS installation. This means, 
 
 If you use TSDNS, make sure the service is stopped before you execute this script.
 
+### Update the server automatically
+As the server is only updated if a new version is available, you can also use the script to automate updates. Simply create a cronjob which executes the script for instance hourly or daily.
+A crontab entry to run ts3updater daily at 13:37 could look like this: `37 13 * * * /home/ts/teamspeak3-server_linux_amd64/ts3updater.sh`. You might want to append ` >/dev/null 2>&1` if you don't want to get a mail each time the script is run. 
+
 ## What this script does
 1. Determine the OS and CPU architecture
 2. Check if there is an existing installation and determine its version
@@ -23,6 +27,6 @@ If you use TSDNS, make sure the service is stopped before you execute this scrip
 4. If there is a newer version:
     1. Download the new version
     2. Check whether the checksum is correct
-    3. Stop running servers
+    3. Stop the server
     4. Extract the updated files into the server directory
     5. Start the server
