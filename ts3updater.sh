@@ -1,7 +1,7 @@
 #!/bin/sh
 # Script Name: ts3updater.sh
 # Author: eminga
-# Version: 0.3.1
+# Version: 0.4
 # Description: Installs and updates TeamSpeak 3 servers
 # License: MIT License
 
@@ -11,14 +11,11 @@ cd "${0%/*}"
 os=$(uname -s)
 if [ "$os" = 'Darwin' ]; then
 	jqfilter='.macos'
-	tsdir='teamspeak3-server_mac'
 else
 	if [ "$os" = 'Linux' ]; then
 		jqfilter='.linux'
-		tsdir='teamspeak3-server_linux'
 	elif [ "$os" = 'FreeBSD' ]; then
 		jqfilter='.freebsd'
-		tsdir='teamspeak3-server_freebsd'
 	else
 		echo 'Could not detect operating system. If you run Linux, FreeBSD, or macOS and get this error, please open an issue on Github.'
 		exit 1
@@ -27,10 +24,8 @@ else
 	architecture=$(uname -m)
 	if [ "$architecture" = 'x86_64' ] || [ "$architecture" = 'amd64' ]; then
 		jqfilter="${jqfilter}.x86_64"
-		tsdir="${tsdir}_amd64"
 	else
 		jqfilter="${jqfilter}.x86"
-		tsdir="${tsdir}_x86"
 	fi
 fi
 
@@ -52,8 +47,9 @@ if [ "$old_version" != "$version" ]; then
 
 	# select random mirror
 	i=$(echo "$link" | wc -l)
-	i=$(awk 'BEGIN{srand(); printf "%d\n",(rand()*2) + 1}')
+	i=$(awk "BEGIN{srand(); printf \"%d\\n\",(rand()*$i) + 1}")
 	link=$(echo "$link" | sed -n ${i}p)
+
 	tmpfile=$(mktemp)
 	curl -Lo "$tmpfile" "$link"
 
@@ -70,6 +66,7 @@ if [ "$old_version" != "$version" ]; then
 	fi
 
 	if [ "$checksum" = "$sha256" ]; then
+		tsdir=$(tar -tf "$tmpfile" | grep -m1 /)
 		if [ -e "ts3server_startscript.sh" ]; then
         		./ts3server_startscript.sh stop
 		else
