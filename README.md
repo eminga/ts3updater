@@ -2,10 +2,12 @@
 A lightweight script to install or update a TeamSpeak 3 server on Linux or FreeBSD. Should also work on macOS (currently untested).
 
 ## Dependencies
+* **jq** (https://stedolan.github.io/jq/download/)
 * curl
-* jq (https://stedolan.github.io/jq/download/)
+* shasum, sha256, or sha256sum
+* tar
 
-All other dependencies (awk, cd, cut, echo, grep, mktemp, sed, shasum/sha256/sha256sum, tar, uname, wc, and an sh-compatible shell) are installed by default on most systems.
+All other dependencies (awk, cd, command, cut, echo, grep, mktemp, printf, sed, test, uname, wc, and an sh-compatible shell) are installed by default on most systems.
 
 ## How to use
 ### Install a new TeamSpeak 3 server
@@ -18,7 +20,7 @@ If you use TSDNS, make sure the service is stopped before you execute this scrip
 
 ### Update the server automatically
 As the server is only updated if a new version is available, you can also use the script to automate updates. Simply create a cronjob which executes the script for instance hourly or daily.
-A crontab entry to run ts3updater daily at 13:37 could look like this: `37 13 * * * /home/ts/teamspeak3-server_linux_amd64/ts3updater.sh`. You might want to append ` >/dev/null 2>&1` if you don't want to get a mail each time the script is run. 
+A crontab entry to run ts3updater daily at 13:28 could look like this: `28 13 * * * /home/ts/teamspeak3-server_linux_amd64/ts3updater.sh`. You might want to append ` >/dev/null 2>&1` if you don't want to get a mail each time the script is run. 
 
 ## What this script does
 1. Determine the OS and CPU architecture
