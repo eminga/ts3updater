@@ -79,7 +79,16 @@ if [ "$old_version" != "$version" ]; then
 
 	if [ "$checksum" = "$sha256" ]; then
 		tsdir=$(tar -tf "$tmpfile" | grep -m1 /)
-		if [ -e "ts3server_startscript.sh" ]; then
+		if [ ! -e '.ts3server_license_accepted' ]; then
+			tar --to-stdout -xf "$tmpfile" "$tsdir"LICENSE
+			echo -n "Accept license agreement (y/N)? "
+			read answer
+			if ! echo "$answer" | grep -iq "^y" ; then
+				rm "$tmpfile"
+				exit 1
+			fi
+		fi
+		if [ -e 'ts3server_startscript.sh' ]; then
         		./ts3server_startscript.sh stop
 		else
 			mkdir "$tsdir" || { echo 'Could not create installation directory. If you wanted to upgrade an existing installation, make sure to place this script INSIDE the existing installation directory.' 1>&2; rm "$tmpfile"; exit 1; }
@@ -87,6 +96,7 @@ if [ "$old_version" != "$version" ]; then
 		fi
 
 		tar --strip-components 1 -xf "$tmpfile" "$tsdir"
+		touch .ts3server_license_accepted
 		./ts3server_startscript.sh start
 	else
 		echo 'Checksum of downloaded file is incorrect!' 1>&2
