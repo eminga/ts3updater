@@ -2,7 +2,7 @@
 A lightweight script to install or update a TeamSpeak 3 server on Linux or FreeBSD. Should also work on macOS (currently untested).
 
 ## Dependencies
-* **jq** (https://stedolan.github.io/jq/download/)
+* **jq** 1.4 or newer (https://stedolan.github.io/jq/download/)
 * curl
 * shasum, sha256, or sha256sum
 * tar
