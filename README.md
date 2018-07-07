@@ -25,7 +25,10 @@ A crontab entry to run ts3updater daily at 13:28 could look like this: `28 13 * 
 
 You must accept the server license agreement before you create the cronjob. To do so, go to the directory of your TS installation, read the file `LICENSE` and create a file called `.ts3server_license_accepted`.
 
-## What this script does
+### Commandline parameters
+All parameters are passed to `ts3server_startscript.sh` when the server is started. If you don't want to start the server after installing or updating, use the parameter `--dont-start`.
+
+## What this script is doing
 1. Determine the OS and CPU architecture
 2. Check if there is an existing installation and determine its version
 3. Check for newer versions
