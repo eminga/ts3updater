@@ -8,7 +8,7 @@ A lightweight script to install or update a TeamSpeak 3 server on Linux or FreeB
 * tar
 * bzip2
 
-All other dependencies (awk, cd, command, cut, echo, grep, mktemp, printf, read, sed, test, touch, uname, wc, and an sh-compatible shell) are installed by default on most systems.
+All other dependencies (awk, basename, cd, command, cut, dirname, echo, grep, mktemp, printf, read, sed, test, touch, uname, wc, and an sh-compatible shell) are installed by default on most systems.
 
 ## How to use
 ### Install a new TeamSpeak 3 server

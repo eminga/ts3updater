@@ -1,11 +1,11 @@
 #!/bin/sh
 # Script Name: ts3updater.sh
 # Author: eminga
-# Version: 1.2
+# Version: 1.3
 # Description: Installs and updates TeamSpeak 3 servers
 # License: MIT License
 
-cd "${0%/*}" || exit 1
+cd "$(dirname "$0")" || exit 1
 
 # check whether the dependencies curl, jq, and tar are installed
 if ! command -v curl > /dev/null 2>&1; then
@@ -93,7 +93,7 @@ if [ "$old_version" != "$version" ]; then
         		./ts3server_startscript.sh stop
 		else
 			mkdir "$tsdir" || { echo 'Could not create installation directory. If you wanted to upgrade an existing installation, make sure to place this script INSIDE the existing installation directory.' 1>&2; rm "$tmpfile"; exit 1; }
-			cd "$tsdir" && mv ../"$0" .
+			cd "$tsdir" && mv ../"$(basename "$0")" .
 		fi
 
 		tar --strip-components 1 -xf "$tmpfile" "$tsdir"
