@@ -1,7 +1,7 @@
 #!/bin/sh
 # Script Name: ts3updater.sh
 # Author: eminga
-# Version: 1.3
+# Version: 1.4
 # Description: Installs and updates TeamSpeak 3 servers
 # License: MIT License
 
@@ -55,16 +55,28 @@ version=$(printf '%s' "$server" | jq -r '.version')
 if [ "$old_version" != "$version" ]; then
 	echo "New version available: $version"
 	checksum=$(printf '%s' "$server" | jq -r '.checksum')
-	link=$(printf '%s' "$server" | jq -r '.mirrors | values[]')
+	links=$(printf '%s' "$server" | jq -r '.mirrors | values[]')
 
-	# select random mirror
-	i=$(printf '%s\n' "$link" | wc -l)
-	i=$(awk "BEGIN{srand(); printf \"%d\",(rand()*$i) + 1}")
-	link=$(printf '%s' "$link" | sed -n "$i"p)
+	# order mirrors randomly
+	if command -v shuf > /dev/null 2>&1; then
+		links=$(printf '%s' "$links" | shuf)
+	fi
 
 	tmpfile=$(mktemp)
-	echo "Downloading the file $link"
-	curl -Lo "$tmpfile" "$link"
+	i=1
+	n=$(printf '%s\n' "$links" | wc -l)
+
+	# try to download from mirrors until download is successful or all mirrors tried
+	while [ "$i" -le "$n" ]; do
+		link=$(printf '%s' "$links" | sed -n "$i"p)
+		echo "Downloading the file $link"
+		curl -Lo "$tmpfile" "$link"
+		if [ $? = 0 ]; then
+			i=$(( n + 1 ))
+		else
+			i=$(( i + 1 ))
+		fi
+	done
 
 	if command -v sha256sum > /dev/null 2>&1; then
 		sha256=$(sha256sum "$tmpfile" | cut -b 1-64)
