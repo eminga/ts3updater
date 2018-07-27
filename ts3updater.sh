@@ -1,7 +1,7 @@
 #!/bin/sh
 # Script Name: ts3updater.sh
 # Author: eminga
-# Version: 1.4
+# Version: 1.5
 # Description: Installs and updates TeamSpeak 3 servers
 # License: MIT License
 
@@ -62,7 +62,7 @@ if [ "$old_version" != "$version" ]; then
 		links=$(printf '%s' "$links" | shuf)
 	fi
 
-	tmpfile=$(mktemp)
+	tmpfile=$(mktemp "${TMPDIR:-/tmp}/ts3updater.XXXXXXXXXX")
 	i=1
 	n=$(printf '%s\n' "$links" | wc -l)
 
