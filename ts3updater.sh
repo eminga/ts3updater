@@ -1,7 +1,7 @@
 #!/bin/sh
 # Script Name: ts3updater.sh
 # Author: eminga
-# Version: 1.5
+# Version: 1.6
 # Description: Installs and updates TeamSpeak 3 servers
 # License: MIT License
 
@@ -12,11 +12,11 @@ if ! command -v curl > /dev/null 2>&1; then
 	echo 'curl not found' 1>&2
 	exit 1
 elif ! command -v jq > /dev/null 2>&1; then
-        echo 'jq not found' 1>&2
-        exit 1
+	echo 'jq not found' 1>&2
+	exit 1
 elif ! command -v tar > /dev/null 2>&1; then
-        echo 'tar not found' 1>&2
-        exit 1
+	echo 'tar not found' 1>&2
+	exit 1
 fi
 
 # determine os and cpu architecture
@@ -41,9 +41,10 @@ else
 	fi
 fi
 
-
+# download JSON file which provides information on server versions and checksums
 server=$(curl -Ls 'https://www.teamspeak.com/versions/server.json' | jq "$jqfilter")
 
+# determine installed version by parsing the most recent entry of the CHANGELOG file
 if [ -e 'CHANGELOG' ]; then
 	old_version=$(grep -Eom1 'Server Release \S*' "CHANGELOG" | cut -b 16-)
 else
@@ -93,6 +94,7 @@ if [ "$old_version" != "$version" ]; then
 	if [ "$checksum" = "$sha256" ]; then
 		tsdir=$(tar -tf "$tmpfile" | grep -m1 /)
 		if [ ! -e '.ts3server_license_accepted' ]; then
+			# display server license
 			tar --to-stdout -xf "$tmpfile" "$tsdir"LICENSE
 			echo -n "Accept license agreement (y/N)? "
 			read answer
@@ -102,15 +104,21 @@ if [ "$old_version" != "$version" ]; then
 			fi
 		fi
 		if [ -e 'ts3server_startscript.sh' ]; then
-        		./ts3server_startscript.sh stop
+			# check if server is running
+			if [ -e 'ts3server.pid' ]; then
+				./ts3server_startscript.sh stop
+			else
+				server_stopped=true
+			fi
 		else
 			mkdir "$tsdir" || { echo 'Could not create installation directory. If you wanted to upgrade an existing installation, make sure to place this script INSIDE the existing installation directory.' 1>&2; rm "$tmpfile"; exit 1; }
 			cd "$tsdir" && mv ../"$(basename "$0")" .
 		fi
 
+		# extract the archive into the installation directory and overwrite existing files
 		tar --strip-components 1 -xf "$tmpfile" "$tsdir"
 		touch .ts3server_license_accepted
-		if [ "$1" != '--dont-start' ]; then
+		if [ "$1" != '--dont-start' ] && [ "$server_stopped" != true ]; then
 			./ts3server_startscript.sh start "$@"
 		fi
 	else
